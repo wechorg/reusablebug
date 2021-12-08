@@ -1,4 +1,4 @@
-name: Master Workflow
+# name: Master Workflow
 on:
   workflow_call:
     inputs:
@@ -30,216 +30,216 @@ jobs:
     - name: Checkout REPOSITORY_NAME
       uses: actions/checkout@master
 
-    - name: Checkout GitHub Action Repo
-      uses: actions/checkout@v2
-      with:
-        repository: SecZetta/sz_github_actions
-        token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
-        path: .github/actions/
+#     - name: Checkout GitHub Action Repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: SecZetta/sz_github_actions
+#         token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
+#         path: .github/actions/
 
-    - name: Run all pre-build tests
-      uses: ./.github/actions/run_prebuild_tests
+#     - name: Run all pre-build tests
+#       uses: ./.github/actions/run_prebuild_tests
 
-  update-suite-image:
-    needs:
-      - run-prebuild-tests
-    uses: ./.github/actions/build_and_push_image
-    with:
-      repo_name: $REPOSITORY_NAME
-      repo_ref: $GITHUB_REF
-      repo_sha: $GITHUB_SHA
-      app_name: identity-suite
-      app_dir: seczetta_identity_suite
-      app_dockerfile: Dockerfile-suite.prod
-      account_id: $AWS_ACCOUNT_ID
-      default_region: $AWS_DEFAULT_REGION
+#   update-suite-image:
+#     needs:
+#       - run-prebuild-tests
+#     uses: ./.github/actions/build_and_push_image
+#     with:
+#       repo_name: $REPOSITORY_NAME
+#       repo_ref: $GITHUB_REF
+#       repo_sha: $GITHUB_SHA
+#       app_name: identity-suite
+#       app_dir: seczetta_identity_suite
+#       app_dockerfile: Dockerfile-suite.prod
+#       account_id: $AWS_ACCOUNT_ID
+#       default_region: $AWS_DEFAULT_REGION
 
-  update-portal-image:
-    needs:
-      - run-prebuild-tests
-    uses: ./.github/actions/build_and_push_image
-    with:
-      repo_name: $REPOSITORY_NAME
-      repo_ref: $GITHUB_REF
-      repo_sha: $GITHUB_SHA
-      app_name: portal
-      app_dir: neaccess_portal
-      app_dockerfile: Dockerfile-portal.prod
-      account_id: $AWS_ACCOUNT_ID
-      default_region: $AWS_DEFAULT_REGION
+#   update-portal-image:
+#     needs:
+#       - run-prebuild-tests
+#     uses: ./.github/actions/build_and_push_image
+#     with:
+#       repo_name: $REPOSITORY_NAME
+#       repo_ref: $GITHUB_REF
+#       repo_sha: $GITHUB_SHA
+#       app_name: portal
+#       app_dir: neaccess_portal
+#       app_dockerfile: Dockerfile-portal.prod
+#       account_id: $AWS_ACCOUNT_ID
+#       default_region: $AWS_DEFAULT_REGION
 
-  update-sidekiq-image:
-    needs:
-      - run-prebuild-tests
-    uses: ./.github/actions/build_and_push_image
-    with:
-      repo_name: $REPOSITORY_NAME
-      repo_ref: $GITHUB_REF
-      repo_sha: $GITHUB_SHA
-      app_name: portal
-      app_dir: seczetta_identity_suite
-      app_dockerfile: Dockerfile-sidekiq.prod
-      account_id: $AWS_ACCOUNT_ID
-      default_region: $AWS_DEFAULT_REGION
+#   update-sidekiq-image:
+#     needs:
+#       - run-prebuild-tests
+#     uses: ./.github/actions/build_and_push_image
+#     with:
+#       repo_name: $REPOSITORY_NAME
+#       repo_ref: $GITHUB_REF
+#       repo_sha: $GITHUB_SHA
+#       app_name: portal
+#       app_dir: seczetta_identity_suite
+#       app_dockerfile: Dockerfile-sidekiq.prod
+#       account_id: $AWS_ACCOUNT_ID
+#       default_region: $AWS_DEFAULT_REGION
 
-  run-db-migrations:
-    name: Run DB migrations
-    outputs:
-      new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
-      ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-      task_family: ${{ steps.generate_variables.outputs.task_family }}
-      service_name: ${{ steps.generate_variables.outputs.service_name }}
-    needs:
-      - update-suite-image
-    runs-on: ubuntu-latest
-    steps:
+#   run-db-migrations:
+#     name: Run DB migrations
+#     outputs:
+#       new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
+#       ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#       task_family: ${{ steps.generate_variables.outputs.task_family }}
+#       service_name: ${{ steps.generate_variables.outputs.service_name }}
+#     needs:
+#       - update-suite-image
+#     runs-on: ubuntu-latest
+#     steps:
 
-    - name: Checkout GitHub Action Repo
-      uses: actions/checkout@v2
-      with:
-        repository: SecZetta/sz_github_actions
-        token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
-        path: .github/actions/
+#     - name: Checkout GitHub Action Repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: SecZetta/sz_github_actions
+#         token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
+#         path: .github/actions/
 
-    - name: Generate cluster variables
-      id: generate_variables
-      uses: ./.github/actions/generate_cluster_variables
-      with:
-        camelcase_app_name: IdentitySuite
-        ecs_cluster_base: ${{ inputs.cluster_name }}
-        feature_letter: ""
+#     - name: Generate cluster variables
+#       id: generate_variables
+#       uses: ./.github/actions/generate_cluster_variables
+#       with:
+#         camelcase_app_name: IdentitySuite
+#         ecs_cluster_base: ${{ inputs.cluster_name }}
+#         feature_letter: ""
 
-    - name: Create new task revision
-      id: create_new_revision
-      uses: ./.github/actions/create_new_task_revision
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        image_name: ${{ needs.update-suite-image.outputs.image_name }}
-        account_id: $AWS_ACCOUNT_ID
-        default_region: $AWS_DEFAULT_REGION
+#     - name: Create new task revision
+#       id: create_new_revision
+#       uses: ./.github/actions/create_new_task_revision
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         image_name: ${{ needs.update-suite-image.outputs.image_name }}
+#         account_id: $AWS_ACCOUNT_ID
+#         default_region: $AWS_DEFAULT_REGION
 
-    - name: Run DB migrations
-      id: run_db_migrations
-      uses: ./.github/actions/run_db_migrations
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
+#     - name: Run DB migrations
+#       id: run_db_migrations
+#       uses: ./.github/actions/run_db_migrations
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
 
-  update-suite-service:
-    name: Update service for identity-suite
-    needs:
-      - update-suite-image
-      - run-db-migrations
-    runs-on: ubuntu-latest
-    steps:
+#   update-suite-service:
+#     name: Update service for identity-suite
+#     needs:
+#       - update-suite-image
+#       - run-db-migrations
+#     runs-on: ubuntu-latest
+#     steps:
 
-    - name: Checkout GitHub Action Repo
-      uses: actions/checkout@v2
-      with:
-        repository: SecZetta/sz_github_actions
-        token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
-        path: .github/actions/
+#     - name: Checkout GitHub Action Repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: SecZetta/sz_github_actions
+#         token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
+#         path: .github/actions/
 
-    - name: Generate cluster variables
-      id: generate_variables
-      uses: ./.github/actions/generate_cluster_variables
-      with:
-        camelcase_app_name: IdentitySuite
-        ecs_cluster_base: dev
-        feature_letter: ""
+#     - name: Generate cluster variables
+#       id: generate_variables
+#       uses: ./.github/actions/generate_cluster_variables
+#       with:
+#         camelcase_app_name: IdentitySuite
+#         ecs_cluster_base: dev
+#         feature_letter: ""
 
-    - name: Update service
-      uses: ./.github/actions/update_service
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        new_revision: ${{ needs.run-db-migrations.outputs.new_revision }}
+#     - name: Update service
+#       uses: ./.github/actions/update_service
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         new_revision: ${{ needs.run-db-migrations.outputs.new_revision }}
 
-  update-portal-service:
-    name: Update service for Portal
-    needs:
-      - run-db-migrations
-      - update-portal-image
-    runs-on: ubuntu-latest
-    steps:
+#   update-portal-service:
+#     name: Update service for Portal
+#     needs:
+#       - run-db-migrations
+#       - update-portal-image
+#     runs-on: ubuntu-latest
+#     steps:
 
-    - name: Checkout GitHub Action Repo
-      uses: actions/checkout@v2
-      with:
-        repository: SecZetta/sz_github_actions
-        token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
-        path: .github/actions/
+#     - name: Checkout GitHub Action Repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: SecZetta/sz_github_actions
+#         token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
+#         path: .github/actions/
 
-    - name: Generate cluster variables
-      id: generate_variables
-      uses: ./.github/actions/generate_cluster_variables
-      with:
-        camelcase_app_name: Portal
-        ecs_cluster_base: dev
-        feature_letter: ""
+#     - name: Generate cluster variables
+#       id: generate_variables
+#       uses: ./.github/actions/generate_cluster_variables
+#       with:
+#         camelcase_app_name: Portal
+#         ecs_cluster_base: dev
+#         feature_letter: ""
 
-    - name: Create new task revision
-      id: create_new_revision
-      uses: ./.github/actions/create_new_task_revision
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        image_name: ${{ needs.update-portal-image.outputs.image_name }}
-        account_id: $AWS_ACCOUNT_ID
-        default_region: $AWS_DEFAULT_REGION
+#     - name: Create new task revision
+#       id: create_new_revision
+#       uses: ./.github/actions/create_new_task_revision
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         image_name: ${{ needs.update-portal-image.outputs.image_name }}
+#         account_id: $AWS_ACCOUNT_ID
+#         default_region: $AWS_DEFAULT_REGION
 
-    - name: Update service
-      uses: ./.github/actions/update_service
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
+#     - name: Update service
+#       uses: ./.github/actions/update_service
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
 
-  update-sidekiq-service:
-    name: Update service for Sidekiq
-    needs:
-      - run-db-migrations
-      - update-sidekiq-image
-    runs-on: ubuntu-latest
-    steps:
+#   update-sidekiq-service:
+#     name: Update service for Sidekiq
+#     needs:
+#       - run-db-migrations
+#       - update-sidekiq-image
+#     runs-on: ubuntu-latest
+#     steps:
 
-    - name: Checkout GitHub Action Repo
-      uses: actions/checkout@v2
-      with:
-        repository: SecZetta/sz_github_actions
-        token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
-        path: .github/actions/
+#     - name: Checkout GitHub Action Repo
+#       uses: actions/checkout@v2
+#       with:
+#         repository: SecZetta/sz_github_actions
+#         token: ${{ secrets.REPO_AND_PACKAGE_TOKEN }}
+#         path: .github/actions/
 
-    - name: Generate cluster variables
-      id: generate_variables
-      uses: ./.github/actions/generate_cluster_variables
-      with:
-        camelcase_app_name: Sidekiq
-        ecs_cluster_base: dev
-        feature_letter: ""
+#     - name: Generate cluster variables
+#       id: generate_variables
+#       uses: ./.github/actions/generate_cluster_variables
+#       with:
+#         camelcase_app_name: Sidekiq
+#         ecs_cluster_base: dev
+#         feature_letter: ""
 
-    - name: Create new task revision
-      id: create_new_revision
-      uses: ./.github/actions/create_new_task_revision
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        image_name: ${{ needs.update-sidekiq-image.outputs.image_name }}
-        account_id: $AWS_ACCOUNT_ID
-        default_region: $AWS_DEFAULT_REGION
+#     - name: Create new task revision
+#       id: create_new_revision
+#       uses: ./.github/actions/create_new_task_revision
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         image_name: ${{ needs.update-sidekiq-image.outputs.image_name }}
+#         account_id: $AWS_ACCOUNT_ID
+#         default_region: $AWS_DEFAULT_REGION
 
-    - name: Update service
-      uses: ./.github/actions/update_service
-      with:
-        ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
-        task_family: ${{ steps.generate_variables.outputs.task_family }}
-        service_name: ${{ steps.generate_variables.outputs.service_name }}
-        new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
+#     - name: Update service
+#       uses: ./.github/actions/update_service
+#       with:
+#         ecs_cluster: ${{ steps.generate_variables.outputs.ecs_cluster }}
+#         task_family: ${{ steps.generate_variables.outputs.task_family }}
+#         service_name: ${{ steps.generate_variables.outputs.service_name }}
+#         new_revision: ${{ steps.create_new_revision.outputs.new_revision }}
