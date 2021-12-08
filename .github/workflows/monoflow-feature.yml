@@ -5,6 +5,7 @@ on:
       - '!development'
       - 'main'
       - '*feature*'
+  workflow_dispatch:
 
 env:
   REPOSITORY_NAME: identity-suite
