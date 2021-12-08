@@ -40,19 +40,19 @@ jobs:
 #     - name: Run all pre-build tests
 #       uses: ./.github/actions/run_prebuild_tests
 
-#   update-suite-image:
-#     needs:
-#       - run-prebuild-tests
-#     uses: ./.github/actions/build_and_push_image
-#     with:
-#       repo_name: $REPOSITORY_NAME
-#       repo_ref: $GITHUB_REF
-#       repo_sha: $GITHUB_SHA
-#       app_name: identity-suite
-#       app_dir: seczetta_identity_suite
-#       app_dockerfile: Dockerfile-suite.prod
-#       account_id: $AWS_ACCOUNT_ID
-#       default_region: $AWS_DEFAULT_REGION
+  update-suite-image:
+    needs:
+      - run-prebuild-tests
+    uses: ./.github/actions/build_and_push_image
+    with:
+      repo_name: $REPOSITORY_NAME
+      repo_ref: $GITHUB_REF
+      repo_sha: $GITHUB_SHA
+      app_name: identity-suite
+      app_dir: seczetta_identity_suite
+      app_dockerfile: Dockerfile-suite.prod
+      account_id: $AWS_ACCOUNT_ID
+      default_region: $AWS_DEFAULT_REGION
 
 #   update-portal-image:
 #     needs:
