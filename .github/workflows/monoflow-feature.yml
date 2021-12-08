@@ -14,7 +14,7 @@ env:
 jobs:
 
   run-master-workflow:
-    uses: wechorg/reusablebug/.github/workflows/master-workflow.yml@main
+    uses: wechorg/reusablebug/.github/workflows/master-workflow.yml@development
     with:
       repo_name: identity-suite
       cluster_name: feature
